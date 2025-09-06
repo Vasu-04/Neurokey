@@ -1,11 +1,8 @@
 // const express = require(express)
 const mongoose = require("mongoose")
-const UserSchema = new mongoose.Schema({
-    email : {
-        type : String
-    },
-    password :{
-        type : String
+const existingUserSchema = new mongoose.Schema({
+    userId : {
+        type : String 
     },
     dwellTime :{
         type : String
@@ -16,8 +13,7 @@ const UserSchema = new mongoose.Schema({
     interKeyTime :{
         type : String
     },
-    
 })
-const userModel = mongoose.model("user",UserSchema)
+const existingUserModel = mongoose.model("existingUser",existingUserSchema)
 
-module.exports = userModel
+module.exports = existingUserModel

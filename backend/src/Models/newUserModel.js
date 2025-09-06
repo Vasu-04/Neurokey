@@ -1,5 +1,5 @@
 // const { mongo } = require("mongoose")
-const mongoose = require("moongoose")
+const mongoose = require("mongoose")
 const newUserSchema = new mongoose.Schema({
     email : {
         type : String

@@ -40,6 +40,9 @@ const SignUpPage = () => {
         }
 
     }
+    const onSignInButtonClick = () => {
+        Navigate("/signInPage")
+    }
     return (
         <div>
             <form onSubmit={handleSubmit}>
@@ -50,6 +53,7 @@ const SignUpPage = () => {
                 <input type='submit' ></input>
             </form>
             <div>{displayMessage}</div>
+            <div><button onClick={onSignInButtonClick}>Sign In</button></div>
         </div>
     )
 }
