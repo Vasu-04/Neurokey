@@ -5,13 +5,13 @@ const existingUserSchema = new mongoose.Schema({
         type : String 
     },
     dwellTime :{
-        type : String
+        type : Number
     },
     flightTime :{
-        type : String
+        type : Number
     },
     interKeyTime :{
-        type : String
+        type : Number
     },
 })
 const existingUserModel = mongoose.model("existingUser",existingUserSchema)
