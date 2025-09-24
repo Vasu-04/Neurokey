@@ -1,5 +1,7 @@
 const express = require("express")
 const router = express.Router()
+const updateCsvFile = require("../assets/updateCsvFile")
+const BackendToPythonConnection = require("../assets/backendToPythonConnection")
 const newUserModel = require("../Models/newUserModel")
 const existingUserModel = require("../Models/existingUserModel")
 
@@ -7,42 +9,6 @@ router.post("/", async (req, res) => {
     const { dwellTime, flightTime, interKeyInterval } = req.body;
     const newUsers = await newUserModel.find()
     let matchFound = false;
-    // newUsers.forEach(async element => {
-    //     if (element.email === req.body.formData.email && element.password === req.body.formData.password) {
-    //         //such user Exist
-    //         const userId = element._id;
-    //         const existingUsers = await existingUserModel.find();
-    //         let existingValidUsers = []; //storing th ekeystroke data for the user
-    //         existingUsers.forEach(existingUser => {
-    //             if (existingUser.userId == userId) {
-    //                 existingValidUsers.push(existingUser)
-    //             }
-    //         });
-    //         console.log("userId : ", userId)
-    //         console.log(existingUsers)
-    //         console.log(existingValidUsers)
-    //         console.log("existingValidUsers length : ", existingValidUsers.length)
-    //         if (existingValidUsers.length == 0) {//whether keystroke data exists for the user
-    //             matchFound = true;
-    //             //give access to user and add his keystroke data to existingUserModel
-
-    //             const newExistingUser = new existingUserModel({
-    //                 userId: userId,
-    //                 dwellTime: dwellTime,
-    //                 flightTime: flightTime,
-    //                 interKeyTime: interKeyInterval
-    //             })
-    //             await newExistingUser.save()
-    //             //console.log("New Existing User Added")
-    //         }
-    //         else {
-    //             // ML Model Code Here
-    //             // adding keystroke biometrics data to existingUserModel
-    //         }
-    //         if (matchFound) return res.status(200).json({ message: "Sign In Success", out: matchFound })
-
-    //     }
-    // });
     for (const element of newUsers) {
         if (element.email === req.body.formData.email && element.password === req.body.formData.password) {
             const userId = element._id;
@@ -54,23 +20,39 @@ router.post("/", async (req, res) => {
                     userId,
                     dwellTime: dwellTime,
                     flightTime: flightTime,
-                    interKeyTime: interKeyInterval  // also fix field name here
+                    interKeyTime: interKeyInterval,  // also fix field name here
+                    target: 1 // Assuming '1' indicates a valid entry
                 });
                 await newExistingUser.save();
                 return res.status(200).json({ message: "Sign In Success", out: true });
             } else {
                 // ML Model Code Here
+                const upadteCsvObj = new updateCsvFile();
+                await upadteCsvObj.exportUserDataToCsv(existingValidUsers);
+                // Call Python Script Here
+                const obj = new BackendToPythonConnection();
+                const pythonResponse = await obj.runPythonScript({"dwellTime":dwellTime,"flightTime":flightTime,"interkeyTime":interKeyInterval});
+                // console.log("Python Response: ", pythonResponse);
+                const targetValue = pythonResponse["authenticated"] ? 1 : 0;
+                const newExistingUser = new existingUserModel({
+                    userId,
+                    dwellTime: dwellTime,
+                    flightTime: flightTime,
+                    interKeyTime: interKeyInterval,  // also fix field name here
+                    target: 1 // Assuming '1' indicates a valid entry
+                });
+                await newExistingUser.save();
+                if(pythonResponse["authenticated"]){
+                    return res.status(200).json({ message: "Sign In Success", out: true });
+                }
+                else{
+                    return res.status(200).json({ message: "Invalid Credentials", out: false });
+                }
             }
         }
     }
     return res.status(200).json({ message: "Invalid Credentials", out: false });
 
-    // if (!matchFound) {
-    //     return res.status(200).json({ message: "Invalid Credentials", out: matchFound })
-    // }
-    // console.log("Users stored : ",newUsers)
-    // console.log(req.body)
-    // res.status(200).json({message : "data recieved success"})
 })
 
 module.exports = router

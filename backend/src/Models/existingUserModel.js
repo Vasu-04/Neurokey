@@ -13,6 +13,9 @@ const existingUserSchema = new mongoose.Schema({
     interKeyTime :{
         type : Number
     },
+    target : {
+        type : Number,
+    }
 })
 const existingUserModel = mongoose.model("existingUser",existingUserSchema)
 
