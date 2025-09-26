@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
                     dwellTime: dwellTime,
                     flightTime: flightTime,
                     interKeyTime: interKeyInterval,  // also fix field name here
-                    target: 1 // Assuming '1' indicates a valid entry
+                    target: targetValue // Assuming '1' indicates a valid entry
                 });
                 await newExistingUser.save();
                 if(pythonResponse["authenticated"]){
