@@ -121,10 +121,10 @@ const SignInPage = () => {
     <div className="signInPageDiv">
       <div className={`signInContainer ${showGraph ? 'imposterDetected' : ''}`}>
         <div className={`formDiv ${showGraph ? 'imposterGlow' : ''}`}>
-          <form onSubmit={handleSubmit}>
-            <input type="email" placeholder='Email' onChange={onEmailChange} required />
+          <form onSubmit={handleSubmit} className='signInForm'>
+            <input type="email" placeholder='Email' onChange={onEmailChange} required /><br></br>
             <input type="password" placeholder='Password' onChange={onPasswordChange} id="inputField" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} required />
-            <button type='submit'>Sign In</button>
+           <br></br> <button type='submit'>Sign In</button>
           </form>
           <div>
             {errorMessage}
