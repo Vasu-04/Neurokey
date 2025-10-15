@@ -27,13 +27,13 @@ router.post("/", async (req, res) => {
                 return res.status(200).json({ message: "Sign In Success", out: true });
             } else {
                 // ML Model Code Here
-                const upadteCsvObj = new updateCsvFile();
-                await upadteCsvObj.exportUserDataToCsv(existingValidUsers);
+                // const upadteCsvObj = new updateCsvFile();
+                // await upadteCsvObj.exportUserDataToCsv(existingValidUsers);
                 // Call Python Script Here
                 const obj = new BackendToPythonConnection();
-                const pythonResponse = await obj.runPythonScript({"dwellTime":dwellTime,"flightTime":flightTime,"interkeyTime":interKeyInterval});
-                // console.log("Python Response: ", pythonResponse);
-                const targetValue = pythonResponse["authenticated"] ? 1 : 0;
+                const pythonResponse = await obj.runPythonScript({"dwell":dwellTime,"flight":flightTime,"interKey":interKeyInterval});
+                console.log("Python Response&&&&&&&&&&&&&&&&&&&&&&&: ", pythonResponse);
+                const targetValue = pythonResponse["result"]["prediction"];
                 const newExistingUser = new existingUserModel({
                     userId,
                     dwellTime: dwellTime,
@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
                     target: targetValue // Assuming '1' indicates a valid entry
                 });
                 await newExistingUser.save();
-                if(pythonResponse["authenticated"]){
+                if(pythonResponse["result"]["prediction"]){
                     return res.status(200).json({ message: "Sign In Success", out: true });
                 }
                 else{

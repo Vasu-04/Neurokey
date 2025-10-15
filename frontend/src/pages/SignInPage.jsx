@@ -3,15 +3,18 @@ import axios from 'axios'
 import { useState, useRef } from 'react'
 // import "../assets/script"
 import { Navigate, useNavigate } from 'react-router-dom'
+import '../style/SignInPageStyle.css'
 
 const SignInPage = () => {
-
+  const [showGraph, setShowGraph] = useState(false);
   const [keyStrokeData, setkeyStrokeData] = useState({})
   const [temporaryBiometricData, settemporaryBiometricData] = useState([]) //dwell-flight-interKey
   const Navigate = useNavigate();
   const [errorMessage, seterrorMessage] = useState("")
   const [formData, setformData] = useState({})
-
+  // if (typingPatternMismatch) {
+  //   setShowGraph(true);
+  // }
   const onEmailChange = (e) => {
     setformData({ ...formData, email: e.target.value })
   }
@@ -94,6 +97,7 @@ const SignInPage = () => {
           Navigate("/HomePage") // Replace with actual home page route
         }
         else {
+          setShowGraph(true);
           seterrorMessage("Email Or Password is incorrect")
         }
         console.log(res)
@@ -103,17 +107,42 @@ const SignInPage = () => {
       })
   }
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder='Email' onChange={onEmailChange} required />
-        <input type="password" placeholder='Password' onChange={onPasswordChange} id="inputField" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} required />
-        <button type='submit'>Sign In</button>
-      </form>
-      <div>
-        {errorMessage}
+    // <div>
+    // <form onSubmit={handleSubmit}>
+    //   <input type="email" placeholder='Email' onChange={onEmailChange} required />
+    //   <input type="password" placeholder='Password' onChange={onPasswordChange} id="inputField" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} required />
+    //   <button type='submit'>Sign In</button>
+    // </form>
+    // <div>
+    //   {errorMessage}
+    // </div>
+    // </div>
+
+    <div className="signInPageDiv">
+      <div className={`signInContainer ${showGraph ? 'imposterDetected' : ''}`}>
+        <div className={`formDiv ${showGraph ? 'imposterGlow' : ''}`}>
+          <form onSubmit={handleSubmit}>
+            <input type="email" placeholder='Email' onChange={onEmailChange} required />
+            <input type="password" placeholder='Password' onChange={onPasswordChange} id="inputField" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} required />
+            <button type='submit'>Sign In</button>
+          </form>
+          <div>
+            {errorMessage}
+          </div>
+        </div>
+
+        <div className={`graphContainer ${showGraph ? 'show' : ''}`}>
+          <div className="graphContent">
+            <div className="graphImagePlaceholder">
+              <img src="your-graph-image.png" alt="Graph" />
+            </div>
+            <div className="analysisText">
+              <strong>Anomaly Detected:</strong> Your typing pattern does not match the registered biometric profile.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
   )
 }
 
